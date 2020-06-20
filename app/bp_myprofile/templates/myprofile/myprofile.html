@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}iGank - 我的主页{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('myprofile.static', filename='css/myprofile.css') }}" type="text/css">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            {% if show_type==0 %}
+            {% include 'myprofile/_my_likes.html' %}
+            {% elif show_type==1 %}
+            {% include 'myprofile/_my_comments.html' %}
+            {% elif show_type==2 %}
+            {% include 'myprofile/_received_likes.html' %}
+            {% elif show_type==3 %}
+            {% include 'myprofile/_received_comments.html' %}
+            {% elif show_type==4 %}
+            {% include 'myprofile/_private_articles.html' %}
+            {% endif %}
+        </div>
+        {% include 'myprofile/_sidebar.html' %}
+    </div>
+</div>
+{% endblock %}

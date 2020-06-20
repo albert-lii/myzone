@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}iGank - 登录{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('auth.static', filename='css/auth.css') }}" type="text/css">
+{% endblock%}
+
+{% block content %}
+<div class="container auth-container">
+    <div class="col-12 col-sm-8 col-md-6 offset-sm-2 offset-md-3 px-xl-5">
+        <div class="card rounded-0 px-3 px-lg-4 login-card">
+            <div class="card-header text-center bg-white py-2">
+                <h5 class="title">iGank 登录</h5>
+            </div>
+            <div class="card-body card-login">
+                <form method="POST" action="{{ url_for('.login') }}">
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        {{ form.account.label(class="col-form-label")}}
+                        {{ form.account(class="form-control", placeholder="请输入用户名或Email") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(class="col-form-label")}}
+                        {{ form.password(class="form-control", placeholder="请输入6-32位密码") }}
+                    </div>
+                    {% if form.errors and form.errors.account %}
+                    <div class="form-error">* {{ form.errors.account.0 }}</div>
+                    {% elif form.errors and form.errors.password %}
+                    <div class="form-error">* {{ form.errors.password.0 }}</div>
+                    {% endif %}
+                    <div class="form-check login-remember-btn">
+                        {{ form.remember_me(class="checkboxinput form-check-input")}}
+                        {{ form.remember_me.label(class="form-check-label")}}
+                    </div>
+                    <div class="login-forget-btn">
+                        <a href="{{ url_for('.forget_password') }}">忘记密码</a>
+                    </div>
+                    {{ form.submit(class="btn btn-primary login-btn")}}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

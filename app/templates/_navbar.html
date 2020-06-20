@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary navbar-shadow">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
+            <img class="navbar-title-img" src="{{ url_for('static',filename='mysite/img/nav-title.png') }}">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {{ 'active' if func_id == 0 }}">
+                    <a class="nav-link" href="{{ url_for('main.index') }}">首页</a>
+                </li>
+                <li class="nav-item {{ 'active' if func_id == 1 }}">
+                    <a class="nav-link" href="{{ url_for('main.get_articles_by_channel', channel_id=1) }}">技术杂谈</a>
+                </li>
+                <li class="nav-item {{ 'active' if func_id == 2 }}">
+                    <a class="nav-link" href="{{ url_for('main.get_articles_by_channel', channel_id=2) }}">生活有道</a>
+                </li>
+                <li class="nav-item {{ 'active' if func_id == 3 }}">
+                    <a class="nav-link" href="{{ url_for('main.show_about') }}">关于</a>
+                </li>
+            </ul>
+            <div class="form-inline navbar-search-box">
+                <input id="search-key" class="form-control" type="text" placeholder="站内搜索">
+                <button class="btn navbar-search-btn" onclick="fullSearch()">
+                    <i class="fa fa-search navbar-search-icon"></i>
+                </button>
+            </div>
+        </div>
+        <!--            用户未登录时显示-->
+        {% if not current_user.is_authenticated %}
+        <div class="navbar-auth">
+            <a class="btn navbar-auth-login" href="{{ url_for('auth.login') }}">登录<span
+                    class="sr-only">(current)</span></a>
+            <a class="btn btn-secondary" href="{{ url_for('auth.register') }}">注册<span
+                    class="sr-only">(current)</span></a>
+        </div>
+        {% else %}
+        <!--            用户登录后显示-->
+        <div class="btn-group" role="group">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                {% if current_user.avatar_url %}
+                <img class="navbar-avatar" src="{{ current_user.avatar_url }}"/>
+                {% else %}
+                <img class="navbar-avatar" src="{{ url_for('static', filename='mysite/img/default-avatar.png') }}"/>
+                {% endif %}
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" target="_blank" href="{{ url_for('myprofile.index') }}">主页</a>
+                <a class="dropdown-item" target="_blank" href="{{ url_for('myprofile.setting') }}">设置</a>
+                {% if current_user.role_id == 3 %}
+                <!--                    管理员才能拥有的权限-->
+                <a class="dropdown-item" href="{{ url_for('main.edit_about') }}">关于</a>
+                <a class="dropdown-item" href="/admin/">后台</a>
+                {% endif %}
+                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">退出</a>
+            </div>
+        </div>
+        {% if current_user.role_id>1 %}
+        <a class="btn btn-secondary navbar-write" target="_blank" href="{{ url_for('work.new_article') }}">写文章</a>
+        {% endif %}
+        {% endif %}
+    </div>
+</nav>
+

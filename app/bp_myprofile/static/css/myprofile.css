@@ -1,0 +1,65 @@
+.common-item {
+    background-color: #fff;
+	padding: 1rem 1rem 2rem 1rem;
+	margin-bottom: 10px;
+	position: relative;
+	clear: both;
+}
+
+.common-item .action {
+    font-size: 1rem;
+    color: #777;
+}
+
+.common-item .username {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #00965e;
+}
+
+.common-item .article-title {
+    font-size: 1.2rem;
+}
+
+.common-item .other-info {
+   float: right;
+   font-size: 1rem;
+   color: #777;
+}
+
+.common-item .unread {
+    background: #FF0000;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.setting-container{
+    margin-top: 2.86rem;
+    margin-bottom: 0.72rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.setting-container .setting-avatar {
+    width: 6rem;
+    height: 6rem;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+
+/* ==================================== bootstrap 相关样式 ==================================== */
+
+.list-group .badge {
+     width: auto;
+     padding: 0.25rem 0.4rem;
+     background-color: #F3969A;
+     border-radius: .4rem;
+     line-height: 1;
+}

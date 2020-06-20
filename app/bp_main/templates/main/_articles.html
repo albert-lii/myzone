@@ -1,0 +1,52 @@
+<!--如果有文章-->
+{% if articles %}
+<div>
+    {% for article in articles %}
+    <article class="excerpt">
+        <header>
+            <a class="label label-important" href="">{{ article.category.name }}<i class="label-arrow"></i></a>
+            <h2>
+                <a target="_blank" href="{{ url_for('work.show_article', article_id=article.id) }}?from={{ func_id }}">{{
+                    article.title
+                    }}</a>
+            </h2>
+        </header>
+        <div class="content">
+            {% if article.cover_url %}
+            <div class="cover">
+                <img class="cover" src="{{ article.cover_url }}"/>
+            </div>
+            {% endif %}
+            {# striptags: 渲染之前把值中所有的HTML标签都删掉 #}
+            {# truncate: 截取指定长度的字符串，默认长度为255 #}
+            <div class="note">
+                {% if article.cover_url %}
+                <p class="text">{{ article.body_html|striptags|truncate(150) }}</p>
+                {% else %}
+                <p class="text">{{ article.body_html|striptags|truncate(300) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <p class="auth-info">
+            <span class="muted"><i class="fa fa-user"></i>{{ article.author.username }}</span>
+            <span class="muted"><i class="fa fa-clock-o"></i>{% if article.update %}{{ timestamp_to_strftime(article.update_time) }}{% else %}{{ timestamp_to_strftime(article.create_time) }}{% endif %}</span>
+            <span class="muted"><i class="fa fa-eye"></i>{{ article.read_count }}浏览</span>
+            <span class="muted"><i class="fa fa-comments-o"></i>{{ article.comments|length }}评论</span>
+            <span class="muted"><i class="fa fa-heart-o"></i>
+                <span class="count">{{ article.likes|length }}</span>喜欢
+            </span>
+        </p>
+    </article>
+    {% endfor %}
+</div>
+
+<!--如果沒有文章-->
+{% else %}
+<div class="tip">
+    {% if channel_id != -1%}
+    <h5>文章君已经在赶来的路上喽，看官稍后再来吧！(づ￣ 3￣)づ </h5>
+    {% else %}
+    <h5>抱歉，你要找的文章不住在这哦！( ´◔ ‸◔`)</h5>
+    {% endif %}
+</div>
+{% endif %}

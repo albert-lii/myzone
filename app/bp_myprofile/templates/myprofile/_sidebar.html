@@ -1,0 +1,31 @@
+<div class="col-md-4">
+    <div class="card border-0 rounded-0 px-3 mb-2 mb-md-3">
+        <div class="card-header bg-white px-0 sidebar-title-underline">
+            <strong><i class="fa fa-cube mr-2 f-17"></i>我的主页</strong>
+        </div>
+        <ul class="list-group list-group-flush f-16">
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a href="{{ url_for('myprofile.get_my_likes') }}">我的喜欢</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a href="{{ url_for('myprofile.get_my_comments') }}">我的评论</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a href="{{ url_for('myprofile.get_received_likes') }}">收到的喜欢</a>
+                {% if unread_like_num>0 %}
+                <span class="badge text-center">{{ unread_like_num }}</span>
+                {% endif %}
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a href="{{ url_for('myprofile.get_received_comments') }}">收到的评论</a>
+                {% if unread_comment_num>0 %}
+                <span class="badge text-center">{{ unread_comment_num }}</span>
+                {% endif %}
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a href="{{ url_for('myprofile.get_private_articles') }}">我的私密文章</a>
+            </li>
+        </ul>
+    </div>
+</div>
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/font-awesome.min.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap4/css/bootwatch_minty.min.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='toastr/css/toastr.min.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='mysite/css/common.css') }}" type="text/css">
+    {% endblock %}
+</head>
+<body>
+{% include '_flashmsg.html' %}
+
+{% block navbar %}
+{% include '_navbar.html' %}
+{% endblock %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='jquery/js/jquery-3.4.1.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='mysite/js/popper.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='bootstrap4/js/bootstrap.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='toastr/js/toastr.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='mysite/js/csrf.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='mysite/js/common.js') }}"></script>
+<script>
+$("#flash-msg").fadeOut(5000);
+
+// 全文搜索
+function fullSearch(){
+    window.location.href = "{{ url_for('main.get_articles_by_fullsearch') }}" + "?keyword=" + $("input[id='search-key']").val();
+}
+</script>
+{% endblock %}
+
+{% block footer %}
+{% include '_footer.html' %}
+{% endblock %}
+</body>
+</html>

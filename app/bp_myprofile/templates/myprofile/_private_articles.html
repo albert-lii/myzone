@@ -1,0 +1,19 @@
+<!--私密保存的文章-->
+{% if private_articles %}
+<div>
+    {% for article in private_articles %}
+    <div class="common-item">
+        <div class="article-title"><a target="_blank" href="{{ url_for('work.show_article', article_id=article.id) }}">《{{ article.title }}》</a></div>
+        <div class="other-info">
+            <span class="muted"><i class="fa fa-clock-o"></i>{{ timestamp_to_str(article.create_time) }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="page-pagination">{{ render_pagination(pagination) }}</div>
+</div>
+{% else %}
+<!--如果沒有内容-->
+<div class="tip">
+    <h5>你的还没有私密文章存档哦！Hi~ o(*￣▽￣*)ブ</h5>
+</div>
+{% endif %}

@@ -1,0 +1,79 @@
+<div class="col-md-4">
+    <!--    传送门-->
+    <div class="card border-0 rounded-0 px-3 mb-2 mb-md-3">
+        <div class="card-header bg-white px-0 sidebar-title-underline">
+            <strong><i class="fa fa-paper-plane mr-2 f-17"></i>传送门</strong>
+        </div>
+        <div class="card-body px-0 pt-3">
+            <div class="row text-center">
+                <div class="col-md-4 deliver-box">
+                    <a href="https://github.com/albert-lii" target="_blank" title="站主的Github">
+                        <img class="deliver-logo" alt="站主的github"
+                             src="{{ url_for('static', filename='mysite/img/github.png') }}">
+                    </a>
+                </div>
+                <div class="col-md-4 deliver-box">
+                    <a href="https://www.jianshu.com/u/fe3e28b3a55d" target="_blank" title="站主的简书">
+                        <img class="deliver-logo" alt="站主的简书"
+                             src="{{ url_for('static', filename='mysite/img/jianshu.png') }}">
+                    </a>
+                </div>
+                <div class="col-md-4 deliver-box">
+                    <a href="https://blog.csdn.net/liyi1009365545" target="_blank" title="站主的CSDN">
+                        <img class="deliver-logo" alt="站主的CSDN"
+                             src="{{ url_for('static', filename='mysite/img/csdn.png') }}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--    微信公众号-->
+    <div class="card border-0 rounded-0 px-3 mb-2 mb-md-3">
+        <div class="card-header bg-white px-0 sidebar-title-underline">
+            <strong><i class="fa fa-weixin mr-2 f-17"></i>微信公众号</strong>
+        </div>
+        <div class="card-body px-0 pt-3">
+            <div class="row text-center">
+                <div class="col-md-12 deliver-box">
+                    <a href="" target="_blank" title="进入博主的Github查看博客源码">
+                        <img class="deliver-logo" alt="站主的github"
+                             src="{{ url_for('static', filename='mysite/img/qrcode-wechat-igank.jpg') }}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--    分类-->
+    {% if categories %}
+    <div class="card border-0 rounded-0 px-3 mb-2 mb-md-3">
+        <div class="card-header bg-white px-0 sidebar-title-underline">
+            <strong><i class="fa fa-book mr-2 f-17"></i>文章分类</strong>
+        </div>
+        <ul class="list-group list-group-flush f-16">
+            {% for category in categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a href="{{ url_for('main.get_articles_by_category', category_id=category.id) }}">{{ category.name
+                    }}</a>
+                <span class="badge text-center">{{ category.articles.all()|length }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <!--    标签云-->
+    {% if tags %}
+    <div class="card border-0 rounded-0 px-3 mb-2 mb-md-3">
+        <div class="card-header bg-white px-0 sidebar-title-underline">
+            <strong><i class="fa fa-tags mr-2 f-17"></i>标&nbsp;签&nbsp;云</strong>
+        </div>
+        <div class="card-body px-0 py-3">
+            <div class="tag-cloud">
+                {% for tag in tags %}
+                <a class="tags f-16" href="{{ url_for('main.get_articles_by_tag', tag_id=tag.id) }}">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}iGank - 首页{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('main.static', filename='css/main.css') }}" type="text/css">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            {% include 'main/_banner.html' %}
+            {% include 'main/_articles.html' %}
+            {% if articles %}
+            <div class="page-pagination">{{ render_pagination(pagination) }}</div>
+            {% endif %}
+        </div>
+        {% include '_sidebar.html' %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}iGank - 忘记密码{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('auth.static', filename='css/auth.css') }}" type="text/css">
+{% endblock%}
+
+{% block content %}
+<div class="container auth-container">
+    <div class="col-12 col-sm-8 col-md-6 offset-sm-2 offset-md-3 px-xl-5">
+        <div class="card rounded-0 px-3 px-lg-4 login-card">
+            <div class="card-header text-center bg-white py-2">
+                <h5 class="title">iGank 忘记密码</h5>
+            </div>
+            <div class="card-body card-login">
+                <form method="POST">
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        {{ form.email.label(class="col-form-label")}}
+                        {{ form.email(class="form-control", placeholder="请输入Email") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.captcha.label(class="col-form-label")}}
+                        <div class="row">
+                            <div class="col-sm-8">
+                                {{ form.captcha(class="form-control", placeholder="请输入邮箱验证码") }}
+                            </div>
+                            <div class="col-sm-4 register-captcha">
+                                <button id="getCaptcha" type="button" class="btn btn-secondary register-captcha-btn"
+                                        onclick="getForgetPwdCaptcha()">获取验证码
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(class="col-form-label")}}
+                        {{ form.password(class="form-control", placeholder="请输入6-32位密码") }}
+                    </div>
+                    {% if form.errors and form.errors.email %}
+                    <div class="form-error">* {{ form.errors.email.0 }}</div>
+                    {% elif form.errors and form.errors.captcha %}
+                    <div class="form-error">* {{ form.errors.captcha.0 }}</div>
+                    {% elif form.errors and form.errors.password %}
+                    <div class="form-error">* {{ form.errors.password.0 }}</div>
+                    {% endif %}
+                    {{ form.submit(class="btn btn-primary login-btn")}}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+var serverData = {
+    getCaptchaUrl: "{{ url_for('auth.send_captcha') }}"
+}
+</script>
+<script type="text/javascript" src="{{ url_for('auth.static',filename='js/auth.js') }}"></script>
+{% endblock %}

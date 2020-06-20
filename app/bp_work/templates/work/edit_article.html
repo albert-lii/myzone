@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if form.title.data %}
+iGank - 编辑文章
+{% else %}
+iGank - 新建文章
+{% endif %}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',filename='bootstrap-tokenfield/css/tokenfield-typeahead.min.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static',filename='bootstrap-tokenfield/css/bootstrap-tokenfield.min.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.min.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('work.static',filename='css/edit_article.css') }}"/>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    {{ form.title(class="form-control", placeholder="请添加文章标题（必填，长度为1-100）" )}}
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.channel(id="select-channel", class="form-control", placeholder="请选择文章专栏")}}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.category(id="select-category", class="form-control", placeholder="请选择文章分类") }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.tags(type="text", id="my-tokenfield", class="form-control tokenfiled",
+                    placeholder="请添加文章标签（选填）" )
+                    }}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <img id="article-cover" class="article-cover"
+                     src="{{ url_for('work.static',filename='img/select-pic.png') }}" onclick="articleCoverClick()"/>
+                {{ form.cover(style="display: none;", accept="image/*", onchange="selectArticleCover(event)") }}
+            </div>
+            <div class="col-md-1">
+                {% if not form.title %}
+                <div class="form-group pull-right">
+                    <input class="btn btn-danger" type="button" onclick="deleteArticleCoverClick()" value="刪除封面"/>
+                </div>
+                {% endif %}
+                <div class="form-group pull-right">
+                    {{ form.save(class="btn btn-secondary") }}
+                </div>
+                <div class="form-group pull-right">
+                    {{ form.publish(class="btn btn-primary") }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div id="my-editormd" class="form-control">
+            {{ form.body(style="display:none;") }}
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript"
+        src="{{ url_for('static',filename='bootstrap-tokenfield/js/typeahead.bundle.js') }}"></script>
+<script type="text/javascript"
+        src="{{ url_for('static',filename='bootstrap-tokenfield/js/bootstrap-tokenfield.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/editormd.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('work.static',filename='js/edit_article.js') }}"></script>
+<script type="text/javascript">
+var serverData = {
+    coverUrl: "{{ cover_url }}",
+    selectDefaultPic: "{{ url_for('work.static', filename='img/select-pic.png') }}"
+}
+
+$(function () {
+    if(serverData.coverUrl == "None" || serverData.coverUrl == ""){
+        $("#article-cover").attr("src","{{ url_for('work.static',filename='img/select-pic.png') }}")
+    }else{
+        $("#article-cover").attr("src",serverData.coverUrl)
+    }
+    $("#article-cover").attr("src",)
+    // markdown 插件
+    editormd("my-editormd", {
+        // width: "100%",
+        height: "calc(100vh - 9rem)",
+        syncScrolling: "single",
+        path: "{{ url_for('static',filename='editormd/lib/') }}",
+        codeFold: true,
+        saveHTMLToTextarea: true, // 保存 HTML 到 Textarea
+        searchReplace: true, // 开启时序/序列图支持，默认关闭
+        htmlDecode : "style,script,iframe|on*", // 开启 HTML 标签解析，为了安全性，默认不开启
+        emoji: true,
+        taskList: true,
+        tocm: true, // Using [TOCM]
+        tex : true, // 开启科学公式TeX语言支持，默认关闭
+        flowChart: true, // 开启流程图支持，默认关闭
+        sequenceDiagram: true, // 开启时序/序列图支持，默认关闭,
+        imageUpload: true, // 上传图片
+        imageFormats: [ "jpg", "jpeg", "gif", "png", "bmp", "webp" ],
+        // 上传图片时指定调用后台的视图函数
+        imageUploadURL : "{{ url_for('work.upload_article_image') }}",
+    });
+
+    // 标签插件 tokenfield + typeahead
+    var engine = new Bloodhound({
+        local: {{ tags_values|safe }},
+        datumTokenizer: function(d) {
+            return Bloodhound.tokenizers.whitespace(d.value);
+        },
+        queryTokenizer: Bloodhound.tokenizers.whitespace
+     });
+     engine.initialize();
+     $('#my-tokenfield').tokenfield({
+        typeahead: [null, { source: engine.ttAdapter() }],
+        limit: 5 // 最多可以添加的标签数
+     });
+});
+
+// 专栏与分类的二级联动
+$("#select-channel").change(function(){
+    var selectChannelId = $("#select-channel").val();
+    var totalCategories = {{ cate_choices|safe }}; // 所有的分类
+    var cateChoiceHtml = "";
+    // 根据专栏的 id 筛选出对应的分类
+    for(var i=0; i<totalCategories.length; i++){
+        if(totalCategories[i]["channel_id"] == selectChannelId){
+            if(i == 0){
+                cateChoiceHtml += "<option selected value=" + totalCategories[i]["id"] + ">" + totalCategories[i]["name"] + "</option>"
+            }else{
+                cateChoiceHtml += "<option value=" + totalCategories[i]["id"] + ">" + totalCategories[i]["name"] + "</option>"
+            }
+        }
+    }
+    $("#select-category").html(cateChoiceHtml);
+});
+</script>
+{% endblock %}
+
+{% block footer %}{% endblock %}

@@ -1,0 +1,113 @@
+<div class="comment-area">
+    {% if current_user.is_authenticated %}
+    <div class="form-group comment-box">
+        <textarea id="comment-input" class="form-control" rows="4" placeholder="写点什么吧..."></textarea>
+        <div class="row comment-box-btn">
+            <button id="cancel" type="button" class="btn cancel-btn" onclick="cancelComment()">取消</button>
+            <button id="submit" type="button" class="btn btn-primary publish-btn" onclick="addComment()">发布</button>
+        </div>
+    </div>
+    {% else %}
+    <div class="form-group comment-unlogin">
+        <div>您尚未登录，请
+            <a class="text-danger" href="{{ url_for('auth.login') }}">登录</a> 或
+            <a class="text-danger" href="{{ url_for('auth.register') }}">注册</a> 后评论
+        </div>
+    </div>
+    {% endif %}
+    <h3 class="comment-introduce">
+        <div class="comment-introduce-left">
+            <span>全部评论</span>
+            <span class="comment-introduce-info">{{ article.comments|length }}</span>
+        </div>
+    </h3>
+    {% if comments %}
+    <div class="comment-list">
+        {% for comment in comments %}
+        <div id="{{ comment.id }}" class="comment-item">
+            {% if comment.from_user.avatar_url %}
+            <img class="comment-avatar" src="{{ comment.from_user.avatar_url }}"/>
+            {% else %}
+            <img class="comment-avatar" src="{{ url_for('static', filename='mysite/img/default-avatar.png') }}"/>
+            {% endif %}
+            <div class="comment-body">
+                <div class="comment-name">
+                    {% if comment.from_user.personal_site!=None %}
+                    <a target="_blank" href="{{ comment.from_user.personal_site }}" style="font-weight: bold;">{{
+                        comment.from_user.username }}</a>
+                    {% else %}
+                    {{ comment.from_user.username }}
+                    {% endif %}
+                    {% if comment.from_uid == article.author_id %}
+                    <span class="comment-author-tag">作者</span>
+                    {% endif %}
+                </div>
+                <div class="comment-time"><span>{{ comments|length - loop.index0 }}楼 </span>
+                    <time>{{ timestamp_to_str(comment.create_time) }}</time>
+                </div>
+                <div class="comment-content">{{ comment.content }}</div>
+                <div class="comment-func">
+                    <div class="comment-func-multi">
+                        <span class="muted" role="button"
+                              onclick="showReplyCommentBox(1, {{ comment.id }}, {{ comment.id }})">
+                            <i class="fa fa-commenting-o comment-fonticon" aria-hidden="true"></i>回复</span>
+                    </div>
+                </div>
+                <div class="comment-replay-box"></div>
+                <div class="comment-child-list">
+                    {% for child_comment in comment.child_comments %}
+                    <div id="{{ child_comment.id }}" class="comment-child">
+                        <div class="comment-child-auth-info">
+                            {% if child_comment.from_user.avatar_url %}
+                            <img class="comment-avatar" src="{{ child_comment.from_user.avatar_url }}"/>
+                            {% else %}
+                            <img class="comment-avatar"
+                                 src="{{ url_for('static', filename='mysite/img/default-avatar.png') }}"/>
+                            {% endif %}
+                            <div style="margin-left: 10px;">
+                                <div class="comment-name">
+                                    {% if child_comment.from_user.personal_site!=None %}
+                                    <a target="_blank" href="{{ child_comment.from_user.personal_site }}" style="font-weight: bold;">{{
+                                        child_comment.from_user.username }}</a>
+                                    {% else %}
+                                    {{ child_comment.from_user.username }}
+                                    {% endif %}
+                                    {% if child_comment.from_uid == article.author_id %}
+                                    <span class="comment-author-tag">作者</span>
+                                    {% endif %}
+                                </div>
+                                <div class="comment-time">
+                                    <time>{{ timestamp_to_str(child_comment.create_time) }}</time>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-content">
+                            <span class="comment-replied-name">
+                                {% if child_comment.from_uid != child_comment.replied_comment.from_uid %}
+                                @{{ child_comment.replied_comment.from_user.username }}
+                                {% endif %}
+                            </span>
+                            {{ child_comment.content }}
+                        </div>
+                        <div class="comment-func">
+                            <div class="comment-func-multi">
+                                    <span class="muted" role="button"
+                                          onclick="showReplyCommentBox(2, {{ comment.id }}, {{ child_comment.id }})">
+                                        <i class="fa fa-commenting-o" aria-hidden="true"></i>回复</span>
+                            </div>
+                        </div>
+                        <div class="comment-replay-box"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div>
+        <strong>暂时还没有评论哦，来写点什么吧...</strong>
+    </div>
+    {% endif %}
+</div>
+

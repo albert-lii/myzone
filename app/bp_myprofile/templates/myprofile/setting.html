@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}iGank - 设置{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('myprofile.static', filename='css/myprofile.css') }}" type="text/css">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div>
+        <div class="card rounded-0 setting-container">
+            <div class="card-body">
+                <!--                头像-->
+                <form method="POST" enctype="multipart/form-data">
+                    {{ avatar_form.csrf_token }}
+                    <div class="form-group">
+                        <div class="row" style="justify-content: center;">
+                            <div class="from-group">
+                                <img id="avatar-preview" class="setting-avatar"
+                                     src="{{ url_for('static', filename='mysite/img/default-avatar.png') }}"
+                                     onclick="avatarClick()"/>
+                                {{ avatar_form.avatar(style="display: none;", accept="image/*",
+                                onchange="selectAvatar(event)") }}
+                                {{ avatar_form.avatar_submit(class="btn btn-primary", style="margin-left: 1rem;") }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!--                用户名-->
+                <form method="POST">
+                    {{ username_form.csrf_token }}
+                    <div class="form-group">
+                        {{ username_form.username.label(class="col-form-label")}}
+                        <div class="row">
+                            <div class="col-sm-9">
+                                {{ username_form.username(class="form-control", placeholder="请输入用户名") }}
+                            </div>
+                            <div class="col-sm-3">
+                                {{ username_form.username_submit(class="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="form-group">
+                    <div class="col-form-label">电子邮箱</div>
+                    <div class="row">
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" value="{{ email }}" disabled/>
+                        </div>
+                    </div>
+                </div>
+                <!--                密码-->
+                <form method="POST">
+                    {{ pwd_form.csrf_token }}
+                    <div class="form-group">
+                        {{ pwd_form.password.label(class="col-form-label")}}
+                        <div class="row">
+                            <div class="col-sm-9">
+                                {{ pwd_form.password(class="form-control", placeholder="请输入新密码") }}
+                            </div>
+                            <div class="col-sm-3">
+                                {{ pwd_form.password_submit(class="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!--                个人站点-->
+                <form method="POST">
+                    {{ site_form.csrf_token }}
+                    <div class="form-group">
+                        {{ site_form.personal_site.label(class="col-form-label")}}
+                        <div class="row">
+                            <div class="col-sm-9">
+                                {{ site_form.personal_site(class="form-control", placeholder="请输入个人网站或博客的地址") }}
+                            </div>
+                            <div class="col-sm-3">
+                                {{ site_form.personal_site_submit(class="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+$(function(){
+    if("{{ current_user.avatar_url }}" == "None"){
+        $("#avatar-preview").attr("src", "{{ url_for('static', filename='mysite/img/default-avatar.png') }}")
+    }else{
+        $("#avatar-preview").attr("src", "{{ current_user.avatar_url or '' }}")
+    }
+});
+
+// 添加/修改头像图片按钮的点击事件
+function avatarClick() {
+    $("#avatar").click();
+}
+
+// 选择头像图片并预览
+function selectAvatar(event){
+    var files = event.target.files, file;
+    if (files && files.length > 0) {
+        // 获取目前上传的文件
+        file = files[0];// 文件大小校验的动作
+        if(file.size > 1024 * 1024 * 2) {
+            alert('图片大小不能超过 2MB!');
+            return false;
+        }
+        // 获取 window 的 URL 工具
+        var URL = window.URL || window.webkitURL;
+        // 通过 file 生成指向的目标 url
+        var imgURL = URL.createObjectURL(file);
+        // 用 attr 将 img 的 src 属性改成获得的 url
+        $("#avatar-preview").attr("src", imgURL);
+        // 使用下面这句可以在内存中释放对此 url 的伺服，跑了之后那个 URL 就无效了
+        // URL.revokeObjectURL(imgURL);
+    }
+}
+
+
+
+
+</script>
+{% endblock %}

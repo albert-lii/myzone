@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}iGank - {{ article.title }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.min.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('work.static',filename='css/comment.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('work.static',filename='css/article.css') }}"/>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="left-menu">
+        {% if current_user.is_authenticated %}
+        <a id="menu-like" class="menu-item">
+            <img id="like-icon" class="menu-icon"
+                 src="{{ url_for('work.static', filename='img/like-unsel.png') }}" onclick="likeClick()"/>
+        </a>
+        {% else %}
+        <a class="menu-item" target="_blank" href="{{ url_for('auth.login') }}">
+            <img class="menu-icon" src="{{ url_for('work.static', filename='img/like-unsel.png') }}"/>
+        </a>
+        {% endif %}
+        {% if current_user.is_authenticated and current_user.id == article.author_id %}
+        <a class="menu-item" href="{{ url_for('work.edit_article', article_id=article.id) }}">
+            <img class="menu-icon" src="{{ url_for('work.static', filename='img/edit.png') }}"/>
+        </a>
+        {% endif %}
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-10">
+            <div class="breadcrumbs">
+                <a title="返回首页" href=""><i class="fa fa-home"></i></a><small>&gt;</small>
+                <a href="{{ url_for('main.get_articles_by_channel', channel_id=article.channel.id) }}">{{
+                    article.channel.name }}</a><small>&gt;</small>
+                <a href="{{ url_for('main.get_articles_by_category', category_id=article.category.id) }}">{{
+                    article.category.name}}</a><small>&gt;</small>
+                <span class="muted">{{ article.title }}</span>
+            </div>
+            <header class="article-header">
+                <h1 class="article-title">{{ article.title }}</h1>
+                <div>
+                    <span id="article-category" class="muted">
+                        <i class="fa fa-anchor"></i>
+                        <a href="{{ url_for('main.get_articles_by_category', category_id=article.category.id) }}">{{ article.category.name }}</a>
+                    </span>
+                    <span class="muted"><i class="fa fa-user"></i>{{ article.author.username }}</span>
+                    <time class="muted"><i class="fa fa-clock-o"></i>
+                        {% if article.update_time %}
+                        {{ timestamp_to_str(article.update_time) }}
+                        {% else %}
+                        {{ timestamp_to_str(article.create_time) }}
+                        {% endif %}
+                    </time>
+                    <span class="muted"><i class="fa fa-eye"></i>{{ article.read_count }}阅读</span>
+                    <span class="muted"><i class="fa fa-comments-o"></i>{{ article.comments|length }}评论</span>
+                    <span class="muted"><i class="fa fa-heart-o"></i>{{ article.likes|length }}喜欢</span>
+                </div>
+            </header>
+            <div id="article-content">
+                <textarea style="display:none;" placeholder="markdown语言">{{ article.body }}</textarea>
+            </div>
+            <footer class="article-footer">
+                <blockquote class="p-1 f-14" style="border-left: 4px solid #dc3545; color: #555;">
+                    <p class="m-1"><strong>版权声明：</strong>如无特殊说明，文章均为本站原创，转载请注明出处</p>
+                    <p id="article-url" class="m-1"><strong>本文链接：</strong></p>
+                </blockquote>
+                {% if article.tags %}
+                <div class="tag-cloud">
+                    <i class="fa fa-tags"></i>
+                    {% for tag in article.tags %}
+                    <a class="tags f-16" href="{{ url_for('main.get_articles_by_tag', tag_id=tag.id) }}">{{ tag.name
+                        }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if pre_article or next_article %}
+                <ul class="pagination justify-content-between">
+                    <li class="page-item">
+                        {% if pre_article %}
+                        <a class="d-none d-md-block"
+                           href="{{ url_for('work.show_article', article_id=pre_article.id ) }}">
+                            <i class="fa fa-chevron-left mr-1"></i>
+                            {{ pre_article.title }}
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li class="page-item">
+                        {% if next_article %}
+                        <a class="d-none d-md-block"
+                           href="{{ url_for('work.show_article', article_id=next_article.id ) }}">
+                            {{ next_article.title}}
+                            <i class="fa fa-chevron-right ml-1"></i>
+                        </a>
+                        {% endif %}
+                    </li>
+                </ul>
+                {% endif %}
+            </footer>
+            {% include 'work/_comment.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/marked.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/prettify.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/raphael.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/underscore.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/sequence-diagram.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/flowchart.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/jquery.flowchart.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/editormd.js') }}"></script>
+<script type="text/javascript">
+var serverData = {
+    doLikeUrl: "{{ url_for('work.do_like') }}",
+    likeUnSelImg: "{{ url_for('work.static',filename='img/like-unsel.png') }}",
+    likeSelImg: "{{ url_for('work.static',filename='img/like-sel.png') }}",
+    addCommentUrl: "{{ url_for('work.add_comment') }}",
+    replyCommentUrl: "{{ url_for('work.reply_comment') }}",
+    loginUrl: "{{ url_for('auth.login') }}",
+    articleId: {{ article.id }},
+    likeData: {{ like|tojson }},
+    isLogin: "{{ current_user.is_authenticated }}"
+}
+$(function(){
+    var myEditor;
+    myEditor = editormd.markdownToHTML("article-content", {
+        htmlDecode: "style,script,iframe",
+        emoji: true,
+        taskList: true,
+        tocm: true,
+        tex: true, // 默认不解析
+        flowChart: true, // 默认不解析
+        sequenceDiagram: true, // 默认不解析
+        codeFold: true
+    });
+    $("#article-url").html("<strong>本文链接：</strong>" + window.location.href)
+});
+</script>
+<script type="text/javascript" src="{{ url_for('work.static', filename='js/article.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('work.static', filename='js/comment.js') }}"></script>
+{% endblock %}

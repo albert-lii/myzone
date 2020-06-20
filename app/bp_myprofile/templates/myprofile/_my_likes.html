@@ -1,0 +1,23 @@
+<!--如果有喜欢的文章-->
+{% if likes %}
+<div>
+    {% for like in likes %}
+    <div class="common-item">
+        <div class="action">你喜欢了<span class="username"> {{ like.to_user.username }} </span>的文章</div>
+        <div class="article-title"><a target="_blank"
+                                      href="{{ url_for('work.show_article', article_id=like.article_id) }}">《{{
+            like.article.title }}》</a></div>
+        <div class="other-info">
+            <span class="muted"><i class="fa fa-clock-o"></i>{{ timestamp_to_str(like.create_time) }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="page-pagination">{{ render_pagination(pagination) }}</div>
+</div>
+{% else %}
+<!--如果沒有内容-->
+<div class="tip">
+    <h5>你还没有任何喜欢的文章哦，快去看看吧！╭(●｀∀´●)╯</h5>
+</div>
+{% endif %}
+

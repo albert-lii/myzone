@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}iGank - 关于本站{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.min.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('work.static',filename='css/article.css') }}"/>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-8">
+            <div id="article-content">
+                <textarea style="display:none;">{{ site_desc.body }}</textarea>
+            </div>
+        </div>
+        {% include 'main/_about_sidebar.html' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/marked.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/prettify.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/raphael.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/underscore.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/sequence-diagram.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/flowchart.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/lib/jquery.flowchart.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='editormd/editormd.js') }}"></script>
+<script type="text/javascript">
+$(function(){
+    var myEditor;
+    myEditor = editormd.markdownToHTML("article-content", {
+        htmlDecode: "style,script,iframe",
+        emoji: true,
+        taskList: true,
+        tocm: true,
+        tex: true, // 默认不解析
+        flowChart: true, // 默认不解析
+        sequenceDiagram: true, // 默认不解析
+        codeFold: true
+    });
+});
+</script>
+{% endblock %}
